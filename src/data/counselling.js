@@ -106,7 +106,7 @@ export const FACULTY_CONTACTS = [
   {
     name: 'Dr. Dinesh Singh',
     role: 'Faculty In-charge (Counsellor, Boys)',
-    department: 'Dept. of Physics',
+    department: 'Dept. of Computer Science & Engineering',
     email: 'dinesh_singh@mnnit.ac.in'
   },
   {

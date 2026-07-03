@@ -52,7 +52,7 @@ const Header = () => {
 
   const navigationLinks = [
     { label: 'Home', href: '/', type: 'link' },
-    { label: 'Event', href: '/event', type: 'link' },
+    { label: 'Events & Workshops', href: '/event', type: 'link' },
     { label: 'Team', href: '/team', type: 'link' },
     {
       label: 'Services',
@@ -61,8 +61,8 @@ const Header = () => {
       submenu: [
         { label: 'Individual Counselling', href: '/individual-counselling', type: 'link' },
         { label: 'De-addiction Clinic', href: '/de-addiction', type: 'link' },
-        { label: 'Events & Workshops', href: '/event', type: 'link' },
-        { label: 'External 24x7 Counselling', href: '/tele_manas', type: 'link' }
+        // { label: 'Events & Workshops', href: '/event', type: 'link' },
+        { label: 'External 24x7 Counselling by Tele MANAS', href: '/tele_manas', type: 'link' }
       ]
     },
     {
@@ -71,7 +71,7 @@ const Header = () => {
       type: 'noaction',
       submenu: [
         { label: 'Academic Resources', type: 'header' },
-        { label: 'Information for Students', href: 'https://www.mnnit.ac.in/index.php/announcements/355-brief-information-for-smooth-registration-process-for-dasa-2015-ccmt-2015', type: 'external' },
+        { label: 'Information for Students', href: 'https://www.mnnit.ac.in/', type: 'external' },
         { label: 'Wellness Programs', href: 'https://www.mnnit.ac.in/index.php/institute/466-workshop', type: 'external' },
         { label: 'Mental Health Resources', type: 'header' },
         // { label: 'Self Assessment Tools', href: '#', type: 'anchor' },
@@ -91,15 +91,15 @@ const Header = () => {
         { label: 'Dean, Student Welfare', href: '/login/dean', type: 'link' }
       ]
     },
-    {
-      label: 'Support',
-      href: '#support',
-      type: 'noaction',
-      submenu: [
-        { label: 'Peer Support', href: '/team', type: 'link' },
-        { label: 'External 24x7 Counselling by Tele MANAS', href: '/tele_manas', type: 'link' }
-      ]
-    },
+    // {
+    //   label: 'Support',
+    //   href: '#support',
+    //   type: 'noaction',
+    //   submenu: [
+    //     { label: 'Peer Support', href: '/team', type: 'link' },
+    //     { label: 'External 24x7 Counselling by Tele MANAS', href: '/tele_manas', type: 'link' }
+    //   ]
+    // },
     { label: 'Emergency', href: '/emergency', type: 'link' }
   ]
 

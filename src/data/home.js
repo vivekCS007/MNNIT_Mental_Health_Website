@@ -34,14 +34,14 @@ export const NEWS_ITEMS = [
 //   description - body text
 //   link     - { label, url } for the button (or null for no button)
 export const ANNOUNCEMENTS = [
-  {
-    category: 'SCHOLARSHIP',
-    date: 'Mar 31, 2026',
-    title: 'SBF List Released',
-    description:
-      'The list of selected students for the Student Benevolence Fund (SBF) scholarship has been released. Click below to view the complete list of selected candidates.',
-    link: { label: 'View Details', url: '#' }
-  },
+  // {
+  //   category: 'SCHOLARSHIP',
+  //   date: 'Mar 31, 2026',
+  //   title: 'SBF List Released',
+  //   description:
+  //     'The list of selected students for the Student Benevolence Fund (SBF) scholarship has been released. Click below to view the complete list of selected candidates.',
+  //   link: { label: 'View Details', url: '#' }
+  // },
   {
     category: 'EVENT',
     date: 'Jun 22, 2026',
@@ -56,7 +56,7 @@ export const ANNOUNCEMENTS = [
     title: 'International Day of Yoga',
     description:
       'The International Day of Yoga was celebrated under the flagship event "Yoga Sangam" with the theme "Yoga for Healthy Ageing" at the MP Hall.',
-    link: null
+    link: { label: 'See Events', url : '/event/idy' }
   }
 ]
 

@@ -152,9 +152,9 @@ const RAW_EVENTS = [
     date: 'Jan 30-Feb 01(2026)',
     sortDate: '2026-01-30',
     venue: 'MNNIT Allahabad Campus',
-    guest: 'Tedx Speaker for BetterMent of Students, MNNIT Allahabad',
+    guest: 'Prof. M. M. Gore, Prof. Rajesh Tripathi, Prof. Rajitha B. & SAC President Dr. Sushil Kumar',
     description:
-      'Regarding Better Personality of Students.',
+      'A three-day Personality Development Workshop organized by the Literary Club, featuring debates, extempore, poetry, story writing, and quizzes to foster confidence, creativity, and effective communication',
     // PASTE YOUTUBE URL(S) HERE
     videos: [],
     placeholderColor: '34495e'

@@ -25,8 +25,8 @@ const DeAddictionPage = () => {
           <div className="deaddict-info">
             <div className="deaddict-block">
               <span className="deaddict-label">When</span>
-              <div className="deaddict-value">Fortnightly Thursday</div>
-              <div className="deaddict-sub">6:00 PM - 7:00 PM</div>
+              <div className="deaddict-value">Monday to Friday</div>
+              <div className="deaddict-sub">9:00 AM - 5:30 PM</div>
             </div>
 
             <div className="deaddict-block">
@@ -37,8 +37,9 @@ const DeAddictionPage = () => {
 
             <div className="deaddict-block">
               <span className="deaddict-label">With</span>
-              <div className="deaddict-value">Dr. [Name]</div>
-              <div className="deaddict-sub">(Consultant)</div>
+              <div className="deaddict-value">Dr. Siddharth Srivastava</div>
+              {/* <div className="deaddict-sub">(Consultant)</div> */}
+              <div className="deaddict-sub">Mob :  9870541346</div>
             </div>
 
             <div className="deaddict-badge">

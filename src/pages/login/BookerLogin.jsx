@@ -75,7 +75,7 @@ const BookerLogin = () => {
         </div>
 
         {/* Role toggle */}
-        <div className="booker-toggle">
+        {/* <div className="booker-toggle">
           {BOOKER_ROLES.map((r) => (
             <button
               key={r}
@@ -89,7 +89,7 @@ const BookerLogin = () => {
               {ROLE_CONFIG[r].icon} {ROLE_CONFIG[r].label}
             </button>
           ))}
-        </div>
+        </div> */}
 
         {error && <div className="error-message">{error}</div>}
 

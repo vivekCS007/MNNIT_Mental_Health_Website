@@ -9,7 +9,7 @@ const EventsPage = () => {
     <div className="events-page">
       <div className="events-board">
         <div className="events-board-header">
-          <h1>Events Notice Board</h1>
+          <h1>Events & Workshops Notice Board</h1>
           <p>A look back at our past events and programmes</p>
         </div>
 
