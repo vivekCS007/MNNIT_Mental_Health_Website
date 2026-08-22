@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { adminAPI } from '../../services/api'
 import useBackLogout from '../../hooks/useBackLogout'
+import ManageCounsellors from './ManageCounsellors'
 import '../../styles/Auth.css'
 
 const STATUS_BADGE = {
@@ -32,8 +33,12 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [branchFilter, setBranchFilter] = useState('')
+  const [courseFilter, setCourseFilter] = useState('')
+  const [yearFilter, setYearFilter] = useState('')
   const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState('all')
+  const [exporting, setExporting] = useState(false)
+  const [activeTab, setActiveTab] = useState('appointments')
   const [details, setDetails] = useState(null)
 
   const fetchStats = async () => {
@@ -68,14 +73,19 @@ const AdminDashboard = () => {
     if (!searchQuery) fetchAll(filterStatus)
   }, [filterStatus])
 
-  const byStatus = searchQuery
+  const appointmentsByStatus = searchQuery
     ? appointments
     : filterStatus
       ? appointments.filter(a => a.request_status === filterStatus || a.status === filterStatus)
       : appointments
-  const filtered = typeFilter === 'all'
-    ? byStatus
-    : byStatus.filter(a => a.booker_type === typeFilter)
+      
+  const filtered = appointmentsByStatus.filter(a => {
+    const matchType = typeFilter === 'all' || a.booker_type === typeFilter
+    const matchBranch = !branchFilter || a.branch === branchFilter
+    const matchCourse = !courseFilter || a.course === courseFilter
+    const matchYear = !yearFilter || a.year === yearFilter
+    return matchType && matchBranch && matchCourse && matchYear
+  })
 
   return (
     <div className="dashboard-container">
@@ -85,26 +95,67 @@ const AdminDashboard = () => {
             <h1>⚙️ Administrator Dashboard</h1>
             <p>Welcome, <strong>{user?.name}</strong></p>
           </div>
-          <button className="btn btn-danger" onClick={logout}>🚪 Logout</button>
+          <div style={{ display:'flex', gap:'10px' }}>
+            <button className="btn btn-secondary" onClick={async () => {
+              setExporting(true)
+              try {
+                const res = await adminAPI.exportData('csv')
+                const blob = res.data instanceof Blob ? res.data : new Blob([res.data], { type: 'text/csv' })
+                const url = window.URL.createObjectURL(blob)
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', 'appointments_export.csv')
+                document.body.appendChild(link)
+                link.click()
+                link.remove()
+                window.URL.revokeObjectURL(url)
+              } catch (e) {
+                alert('Failed to export data')
+              }
+              setExporting(false)
+            }} disabled={exporting}>
+              {exporting ? 'Downloading...' : '📥 Download CSV'}
+            </button>
+            <button className="btn btn-danger" onClick={logout}>🚪 Logout</button>
+          </div>
         </div>
 
-        {/* Stats */}
-        {stats && (
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:'14px', marginBottom:'24px' }}>
-            {[
-              { label:'Total Requests', value: stats.totalRequests,   color:'#5b3ba6', icon:'📁' },
-              { label:'Pending',        value: stats.pendingRequests,  color:'#f39c12', icon:'⏳' },
-              { label:'Completed',      value: stats.completedRequests,color:'#27ae60', icon:'🟢' },
-              { label:'Total Students', value: stats.totalStudents,    color:'#3498db', icon:'👨‍🎓' },
-            ].map(c => (
-              <div key={c.label} style={{ background:'white', borderRadius:'10px', padding:'20px', textAlign:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.07)', borderTop:`4px solid ${c.color}` }}>
-                <div style={{ fontSize:'1.6rem' }}>{c.icon}</div>
-                <div style={{ fontSize:'1.9rem', fontWeight:'bold', color:c.color }}>{c.value}</div>
-                <div style={{ color:'#666', fontSize:'0.85rem' }}>{c.label}</div>
+        <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+          <button 
+            className={`btn ${activeTab === 'appointments' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('appointments')}
+          >
+            Appointments
+          </button>
+          <button 
+            className={`btn ${activeTab === 'counsellors' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('counsellors')}
+          >
+            Manage Counsellors
+          </button>
+        </div>
+
+        {activeTab === 'appointments' ? (
+          <>
+            {/* Stats */}
+            {stats && (
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:'14px', marginBottom:'24px' }}>
+                {[
+                  { label:'Total Requests', value: stats.totalRequests,   color:'#5b3ba6', icon:'📁' },
+                  { label:'Pending',        value: stats.pendingRequests,  color:'#f39c12', icon:'⏳' },
+                  { label:'Completed',      value: stats.completedRequests,color:'#27ae60', icon:'🟢' },
+                  { label:'Total Students', value: stats.totalStudents,    color:'#3498db', icon:'👨‍🎓' },
+                  { label:'Total Faculty',  value: stats.totalFaculty,     color:'#e74c3c', icon:'👨‍🏫' },
+                  { label:'Total Staff',    value: stats.totalStaff,       color:'#16a085', icon:'🧑‍💼' }
+                ].map(c => (
+                  <div key={c.label} style={{ background:'white', borderRadius:'10px', padding:'20px', textAlign:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.07)', borderTop:`4px solid ${c.color}` }}>
+                    <div style={{ fontSize:'1.6rem' }}>{c.icon}</div>
+                    <div style={{ fontSize:'1.9rem', fontWeight:'bold', color:c.color }}>{c.value}</div>
+                    <div style={{ color:'#666', fontSize:'0.85rem' }}>{c.label}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
         {/* Search + Filter bar */}
         <div style={{ background:'white', padding:'20px', borderRadius:'12px', marginBottom:'20px', boxShadow:'0 2px 8px rgba(0,0,0,0.07)', display:'flex', gap:'12px', flexWrap:'wrap', alignItems:'flex-end' }}>
@@ -138,8 +189,37 @@ const AdminDashboard = () => {
               <option value="staff">Staff</option>
             </select>
           </div>
+          <div style={{ minWidth:'150px' }}>
+            <label style={{ display:'block', marginBottom:'6px', fontWeight:'600', fontSize:'0.9rem' }}>Filter by Branch</label>
+            <select value={branchFilter} onChange={e => setBranchFilter(e.target.value)} style={{ width:'100%', padding:'8px', borderRadius:'6px', border:'1px solid #ddd' }}>
+              <option value="">All Branches</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Electronics & Communication Engineering">ECE</option>
+              <option value="Computer Applications">Computer Applications</option>
+              <option value="Administration">Administration</option>
+            </select>
+          </div>
+          <div style={{ minWidth:'150px' }}>
+            <label style={{ display:'block', marginBottom:'6px', fontWeight:'600', fontSize:'0.9rem' }}>Filter by Course</label>
+            <select value={courseFilter} onChange={e => setCourseFilter(e.target.value)} style={{ width:'100%', padding:'8px', borderRadius:'6px', border:'1px solid #ddd' }}>
+              <option value="">All Courses</option>
+              <option value="B.Tech">B.Tech</option>
+              <option value="M.Tech">M.Tech</option>
+              <option value="MCA">MCA</option>
+            </select>
+          </div>
+          <div style={{ minWidth:'150px' }}>
+            <label style={{ display:'block', marginBottom:'6px', fontWeight:'600', fontSize:'0.9rem' }}>Filter by Year</label>
+            <select value={yearFilter} onChange={e => setYearFilter(e.target.value)} style={{ width:'100%', padding:'8px', borderRadius:'6px', border:'1px solid #ddd' }}>
+              <option value="">All Years</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+            </select>
+          </div>
           <button className="btn btn-primary" onClick={handleSearch} style={{ padding:'8px 20px' }}>Search</button>
-          <button className="btn btn-secondary" onClick={() => { setSearchQuery(''); setFilterStatus(''); setTypeFilter('all'); fetchAll(); fetchStats() }} style={{ padding:'8px 16px' }}>🔄 Reset</button>
+          <button className="btn btn-secondary" onClick={() => { setSearchQuery(''); setFilterStatus(''); setTypeFilter('all'); setBranchFilter(''); setCourseFilter(''); setYearFilter(''); fetchAll(); fetchStats() }} style={{ padding:'8px 16px' }}>🔄 Reset</button>
         </div>
 
         {/* Table */}
@@ -158,7 +238,9 @@ const AdminDashboard = () => {
                     <th>Name</th>
                     <th>Type</th>
                     <th>Reg No / Email</th>
-                    <th>Branch / Dept</th>
+                    <th>Branch</th>
+                    <th>Course</th>
+                    <th>Year</th>
                     <th>Date</th>
                     <th>Time</th>
                     <th>Counsellor</th>
@@ -184,6 +266,8 @@ const AdminDashboard = () => {
                         </td>
                         <td>{apt.registration_number || apt.booker_email}</td>
                         <td>{apt.branch || '-'}</td>
+                        <td>{apt.course || '-'}</td>
+                        <td>{apt.year || '-'}</td>
                         <td>{new Date(apt.appointment_date).toLocaleDateString('en-IN')}</td>
                         <td>{apt.time_slot}</td>
                         <td>{apt.counsellor_name || '—'}</td>
@@ -229,6 +313,21 @@ const AdminDashboard = () => {
                 </p>
               </section>
 
+              <section style={{ background:'#f1f3f5', borderRadius:'10px', padding:'16px', marginTop:'14px' }}>
+                <h4 style={{ margin:'0 0 8px', textTransform:'capitalize' }}>{details.booker_type || 'User'} Details</h4>
+                <p style={{ margin:'0 0 6px', fontSize:'0.9rem' }}>
+                  <strong>Name:</strong> {details.booker_name} ({details.registration_number || 'N/A'})
+                </p>
+                <p style={{ margin:'0 0 6px', fontSize:'0.9rem' }}>
+                  <strong>Email:</strong> {details.booker_email || 'N/A'}
+                </p>
+                {details.booker_type === 'student' && (
+                  <p style={{ margin:0, fontSize:'0.9rem' }}>
+                    <strong>Course & Branch:</strong> {details.course || 'N/A'} - {details.branch || 'N/A'} (Year {details.year || 'N/A'})
+                  </p>
+                )}
+              </section>
+
               <section style={{ background:'white', borderRadius:'10px', padding:'16px', marginTop:'14px', boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
                 <h4 style={{ margin:'0 0 8px' }}>Counsellor's Solution</h4>
                 <p style={{ margin:'0 0 8px', color:'#444', whiteSpace:'pre-wrap' }}>
@@ -248,6 +347,10 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+        </>
+      ) : (
+        <ManageCounsellors />
+      )}
       </div>
     </div>
   )
