@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { ROLE_CONFIG } from '../../constants/index'
 import { bookerAPI } from '../../services/api'
@@ -12,8 +12,6 @@ const STATUS_BADGE = {
   REJECTED:  { color: '#e74c3c', label: '❌ Rejected' },
 }
 
-const TIME_SLOTS = ['09:00 AM','10:00 AM','11:00 AM','01:00 PM','02:00 PM','03:00 PM','04:00 PM']
-
 const StudentDashboard = () => {
   const { user, logout } = useAuth()
   const roleLabel = ROLE_CONFIG[user?.userType]?.label || 'Appointments'
@@ -26,6 +24,10 @@ const StudentDashboard = () => {
   const [msg, setMsg] = useState({ type: '', text: '' })
 
   // Book form state
+  const [counsellors, setCounsellors] = useState([])
+  const [selectedCounsellor, setSelectedCounsellor] = useState('general')
+  const [availability, setAvailability] = useState({ schedules: [], taken: [] })
+  
   const [date, setDate] = useState('')
   const [timeSlot, setTimeSlot] = useState('')
   const [description, setDescription] = useState('')
@@ -43,7 +45,60 @@ const StudentDashboard = () => {
     }
   }
 
-  useEffect(() => { fetchAppointments() }, [])
+  // Load Counsellors on mount
+  useEffect(() => {
+    fetchAppointments()
+    bookerAPI.getCounsellors().then(res => setCounsellors(res.data || [])).catch(console.error)
+  }, [])
+
+  // Load Availability when selectedCounsellor changes
+  useEffect(() => {
+    if (activeTab === 'appointments') {
+      const cid = selectedCounsellor === 'general' ? null : selectedCounsellor;
+      bookerAPI.getAvailability(cid).then(res => setAvailability(res.data || { schedules: [], taken: [] })).catch(console.error)
+      setDate('')
+      setTimeSlot('')
+    }
+  }, [selectedCounsellor, activeTab])
+
+  // Calculate available time slots for the chosen date
+  const availableSlots = useMemo(() => {
+    if (!date || !availability.schedules.length) return []
+    
+    // JS getDay(): 0=Sun, 1=Mon, ..., 6=Sat
+    let dayOfWeek = new Date(date).getDay()
+    // Our DB uses 1=Mon ... 7=Sun or 0=Sun? Let's assume standard JS day or match DB (where Sun=0 or 7).
+    // In our seed, Mon=1, Tue=2, Wed=3, Thu=4. So it aligns with JS 1=Mon. 
+    
+    const daySchedules = availability.schedules.filter(s => s.day_of_week === dayOfWeek)
+    let generatedSlots = new Set()
+
+    daySchedules.forEach(schedule => {
+      let [h, m] = schedule.start_time.split(':').map(Number)
+      let [eh, em] = schedule.end_time.split(':').map(Number)
+      
+      let currentMin = h * 60 + m
+      let endMin = eh * 60 + em
+      
+      while (currentMin + schedule.slot_duration <= endMin) {
+        let slotH = Math.floor(currentMin / 60)
+        let slotM = currentMin % 60
+        let slotString = `${slotH.toString().padStart(2, '0')}:${slotM.toString().padStart(2, '0')}:00`
+        generatedSlots.add(slotString)
+        currentMin += schedule.slot_duration
+      }
+    })
+
+    // Filter out taken slots
+    let slotsArray = Array.from(generatedSlots)
+    const takenSet = new Set(
+      availability.taken
+        .filter(t => t.appointment_date.startsWith(date))
+        .map(t => t.time_slot)
+    )
+    
+    return slotsArray.filter(s => !takenSet.has(s)).sort()
+  }, [date, availability])
 
   const handleBook = async (e) => {
     e.preventDefault()
@@ -54,9 +109,18 @@ const StudentDashboard = () => {
     }
     setBookLoading(true)
     try {
-      await bookerAPI.bookAppointment({ appointment_date: date, time_slot: timeSlot, description })
+      const payload = { 
+        appointment_date: date, 
+        time_slot: timeSlot, 
+        description,
+        requested_counsellor_id: selectedCounsellor === 'general' ? null : selectedCounsellor
+      }
+      await bookerAPI.bookAppointment(payload)
       setMsg({ type: 'success', text: '✅ Appointment booked successfully! A counsellor will review it.' })
       setDate(''); setTimeSlot(''); setDescription('')
+      // Refresh taken slots
+      const cid = selectedCounsellor === 'general' ? null : selectedCounsellor;
+      bookerAPI.getAvailability(cid).then(res => setAvailability(res.data || { schedules: [], taken: [] })).catch(console.error)
       fetchAppointments()
       setTimeout(() => setActiveTab('status'), 1500)
     } catch (err) {
@@ -72,6 +136,10 @@ const StudentDashboard = () => {
       await bookerAPI.cancelAppointment(id)
       setMsg({ type: 'success', text: 'Appointment cancelled.' })
       fetchAppointments()
+      if (activeTab === 'appointments') {
+        const cid = selectedCounsellor === 'general' ? null : selectedCounsellor;
+        bookerAPI.getAvailability(cid).then(res => setAvailability(res.data || { schedules: [], taken: [] })).catch(console.error)
+      }
     } catch {
       setMsg({ type: 'error', text: 'Could not cancel. Try again.' })
     }
@@ -139,22 +207,45 @@ const StudentDashboard = () => {
           <div style={{ background:'white', padding:'30px', borderRadius:'12px', maxWidth:'520px', boxShadow:'0 2px 8px rgba(0,0,0,0.08)' }}>
             <h2>📅 Book a Counselling Session</h2>
             <form onSubmit={handleBook} style={{ marginTop:'20px' }}>
+              
               <div className="form-group">
+                <label>Select Counsellor</label>
+                <select value={selectedCounsellor} onChange={e => setSelectedCounsellor(e.target.value)} required>
+                  <option value="general">General (Any Available Counsellor)</option>
+                  {counsellors.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+                <small style={{ color: '#666', display: 'block', marginTop: '4px' }}>
+                  {selectedCounsellor === 'general' ? 'Your request will be visible to all active counsellors.' : 'Your request will be prioritized for this specific counsellor.'}
+                </small>
+              </div>
+
+              <div className="form-group" style={{ marginTop: '16px' }}>
                 <label>Appointment Date</label>
                 <input type="date" min={today} value={date} onChange={e => setDate(e.target.value)} required />
+                {date && (
+                  <small style={{ color: availableSlots.length > 0 ? '#27ae60' : '#e74c3c', display: 'block', marginTop: '4px', fontWeight: 'bold' }}>
+                    {availableSlots.length} slot(s) available on this date
+                  </small>
+                )}
               </div>
+
               <div className="form-group">
                 <label>Time Slot</label>
-                <select value={timeSlot} onChange={e => setTimeSlot(e.target.value)} required>
-                  <option value="">-- Select a time --</option>
-                  {TIME_SLOTS.map(t => <option key={t} value={t}>{t}</option>)}
+                <select value={timeSlot} onChange={e => setTimeSlot(e.target.value)} required disabled={availableSlots.length === 0}>
+                  <option value="">-- Select an available time --</option>
+                  {availableSlots.map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
                 </select>
               </div>
+
               <div className="form-group">
                 <label>Brief Description (optional)</label>
                 <textarea rows="3" placeholder="Describe your concern briefly..." value={description} onChange={e => setDescription(e.target.value)} style={{ width:'100%', padding:'8px', borderRadius:'6px', border:'1px solid #ddd' }} />
               </div>
-              <button type="submit" className="btn-login" disabled={bookLoading}>
+              <button type="submit" className="btn-login" disabled={bookLoading || availableSlots.length === 0}>
                 {bookLoading ? 'Booking...' : '📩 Book Appointment'}
               </button>
             </form>
@@ -196,7 +287,7 @@ const StudentDashboard = () => {
                           <td>{i + 1}</td>
                           <td>{new Date(apt.appointment_date).toLocaleDateString('en-IN')}</td>
                           <td>{apt.time_slot}</td>
-                          <td>{apt.counsellor_name || '—'}</td>
+                          <td>{apt.counsellor_name || 'General (Unassigned)'}</td>
                           <td><span style={{ background: badge.color, color:'white', padding:'4px 10px', borderRadius:'12px', fontSize:'0.82rem', fontWeight:'600' }}>{badge.label}</span></td>
                           <td>
                             {apt.status === 'PENDING' && (

@@ -54,8 +54,10 @@ const DeanDashboard = () => {
   const [byBranch, setByBranch] = useState([])
   const [byStatus, setByStatus] = useState([])
   const [period, setPeriod]     = useState('month')
+  const [userTypeGraphFilter, setUserTypeGraphFilter] = useState('all')
   const [loading, setLoading]   = useState(true)
   const [loadingT, setLoadingT] = useState(false)
+  const [exporting, setExporting] = useState(false)
 
   // Appointments table
   const [appointments, setAppointments] = useState([])
@@ -63,6 +65,9 @@ const DeanDashboard = () => {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('')
+  const [branchFilter, setBranchFilter] = useState('')
+  const [courseFilter, setCourseFilter] = useState('')
+  const [yearFilter, setYearFilter] = useState('')
   const [details, setDetails] = useState(null)
 
   useEffect(() => {
@@ -71,7 +76,7 @@ const DeanDashboard = () => {
       try {
         const [statsRes, analyticsRes] = await Promise.all([
           deanAPI.getRequestStats(),
-          deanAPI.getDashboardAnalytics(),
+          deanAPI.getDashboardAnalytics(userTypeGraphFilter),
         ])
         setStats(statsRes.data)
         setByBranch(analyticsRes.data?.byBranch || [])
@@ -80,6 +85,9 @@ const DeanDashboard = () => {
       finally { setLoading(false) }
     }
     fetchAll()
+  }, [userTypeGraphFilter])
+
+  useEffect(() => {
     fetchAppointments()
   }, [])
 
@@ -132,14 +140,19 @@ const DeanDashboard = () => {
       const st = a.request_status || a.status
       const matchType = typeFilter === 'all' || a.booker_type === typeFilter
       const matchStatus = !statusFilter || st === statusFilter
+      const matchBranch = !branchFilter || a.branch === branchFilter
+      const matchCourse = !courseFilter || a.course === courseFilter
+      const matchYear = !yearFilter || a.year === yearFilter
+      
       const q = search.trim().toLowerCase()
       const matchSearch = !q ||
         (a.booker_name && a.booker_name.toLowerCase().includes(q)) ||
         (a.registration_number && a.registration_number.toLowerCase().includes(q)) ||
         (a.booker_email && a.booker_email.toLowerCase().includes(q))
-      return matchType && matchStatus && matchSearch
+        
+      return matchType && matchStatus && matchBranch && matchCourse && matchYear && matchSearch
     })
-  }, [appointments, search, typeFilter, statusFilter])
+  }, [appointments, search, typeFilter, statusFilter, branchFilter, courseFilter, yearFilter])
 
   const STAT_CARDS = [
     { label:'Total Requests',    value: stats?.totalRequests     || 0, color:'#5b3ba6' },
@@ -161,7 +174,26 @@ const DeanDashboard = () => {
             <h1 style={{ margin:0 }}>Dean Dashboard</h1>
             <p style={{ margin:'4px 0 0', color:'#666' }}>Welcome, <strong>{user?.name}</strong> - Student Welfare Overview</p>
           </div>
-          <button className="btn btn-danger" onClick={logout}>Logout</button>
+          <div style={{ display:'flex', gap:'10px' }}>
+            <button className="btn btn-secondary" onClick={async () => {
+              setExporting(true)
+              try {
+                const res = await deanAPI.exportData('csv')
+                const url = window.URL.createObjectURL(new Blob([res.data]))
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', 'dean_appointments_export.csv')
+                document.body.appendChild(link)
+                link.click()
+              } catch (e) {
+                alert('Failed to export data')
+              }
+              setExporting(false)
+            }} disabled={exporting}>
+              {exporting ? 'Downloading...' : '📥 Download CSV Report'}
+            </button>
+            <button className="btn btn-danger" onClick={logout}>Logout</button>
+          </div>
         </div>
 
         {loading ? (
@@ -207,7 +239,15 @@ const DeanDashboard = () => {
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))', gap:'22px', marginBottom:'22px' }}>
               {/* By status pie */}
               <div style={{ background:'white', borderRadius:'14px', padding:'22px', boxShadow:'0 2px 10px rgba(0,0,0,0.06)' }}>
-                <h2 style={{ margin:'0 0 12px', fontSize:'1.2rem' }}>By Status</h2>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'12px' }}>
+                  <h2 style={{ margin:0, fontSize:'1.2rem' }}>By Status</h2>
+                  <select value={userTypeGraphFilter} onChange={e => setUserTypeGraphFilter(e.target.value)} style={{ padding:'6px', borderRadius:'6px', border:'1px solid #ddd' }}>
+                    <option value="all">All Users</option>
+                    <option value="student">Students</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="staff">Staff</option>
+                  </select>
+                </div>
                 {statusData.length === 0 ? (
                   <p style={{ textAlign:'center', padding:'40px', color:'#888' }}>No data.</p>
                 ) : (
@@ -276,6 +316,26 @@ const DeanDashboard = () => {
                   <option value="COMPLETED">Completed</option>
                   <option value="REJECTED">Rejected</option>
                 </select>
+                <select value={branchFilter} onChange={e => setBranchFilter(e.target.value)} style={{ padding:'9px 12px', borderRadius:'8px', border:'1px solid #ddd' }}>
+                  <option value="">All Branches</option>
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Electronics & Communication Engineering">ECE</option>
+                  <option value="Computer Applications">Computer Applications</option>
+                  <option value="Administration">Administration</option>
+                </select>
+                <select value={courseFilter} onChange={e => setCourseFilter(e.target.value)} style={{ padding:'9px 12px', borderRadius:'8px', border:'1px solid #ddd' }}>
+                  <option value="">All Courses</option>
+                  <option value="B.Tech">B.Tech</option>
+                  <option value="M.Tech">M.Tech</option>
+                  <option value="MCA">MCA</option>
+                </select>
+                <select value={yearFilter} onChange={e => setYearFilter(e.target.value)} style={{ padding:'9px 12px', borderRadius:'8px', border:'1px solid #ddd' }}>
+                  <option value="">All Years</option>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                  <option value="4th Year">4th Year</option>
+                </select>
               </div>
 
               {loadingA ? (
@@ -291,7 +351,9 @@ const DeanDashboard = () => {
                         <th>Name</th>
                         <th>Type</th>
                         <th>Reg No / Email</th>
-                        <th>Branch / Dept</th>
+                        <th>Branch</th>
+                        <th>Course</th>
+                        <th>Year</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Counsellor</th>
@@ -314,6 +376,8 @@ const DeanDashboard = () => {
                             <td><span style={{ background:tb.color, color:'white', padding:'2px 9px', borderRadius:'10px', fontSize:'0.72rem' }}>{tb.label}</span></td>
                             <td>{apt.registration_number || apt.booker_email}</td>
                             <td>{apt.branch || '-'}</td>
+                            <td>{apt.course || '-'}</td>
+                            <td>{apt.year || '-'}</td>
                             <td>{new Date(apt.appointment_date).toLocaleDateString('en-IN')}</td>
                             <td>{apt.time_slot}</td>
                             <td>{apt.counsellor_name || '-'}</td>
