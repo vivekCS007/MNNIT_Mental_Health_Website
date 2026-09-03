@@ -63,6 +63,10 @@ export const authAPI = {
 export const bookerAPI = {
   getProfile: () =>
     apiClient.get('/appointments/profile'),
+  getCounsellors: () =>
+    apiClient.get('/appointments/counsellors'),
+  getAvailability: (counsellorId) =>
+    apiClient.get(`/appointments/availability`, { params: { counsellorId } }),
   bookAppointment: (data) =>
     apiClient.post('/appointments', data),
   getAppointments: () =>
@@ -123,15 +127,29 @@ export const adminAPI = {
     apiClient.get('/admin/appointments/search', { params: { regNo } }),
   getStatistics: () =>
     apiClient.get('/admin/statistics'),
+  getAnalytics: (userType = 'all') =>
+    apiClient.get('/admin/analytics', { params: { userType } }),
   exportData: (format = 'csv') =>
-    apiClient.get(`/admin/export?format=${format}`)
+    apiClient.get(`/admin/export?format=${format}`, { responseType: 'blob' }),
+  getCounsellors: () =>
+    apiClient.get('/admin/counsellors'),
+  createCounsellor: (data) =>
+    apiClient.post('/admin/counsellors', data),
+  getSchedules: (id) =>
+    apiClient.get(`/admin/counsellors/${id}/schedules`),
+  addSchedule: (id, data) =>
+    apiClient.post(`/admin/counsellors/${id}/schedules`, data),
+  deleteSchedule: (id, scheduleId) =>
+    apiClient.delete(`/admin/counsellors/${id}/schedules/${scheduleId}`),
+  blockSlot: (id, data) =>
+    apiClient.post(`/admin/counsellors/${id}/block-slot`, data)
 }
 
 // Dean API
 // Dean API
 export const deanAPI = {
-  getDashboardAnalytics: () =>
-    apiClient.get('/dean/analytics'),
+  getDashboardAnalytics: (userType = 'all') =>
+    apiClient.get('/dean/analytics', { params: { userType } }),
   getRequestStats: () =>
     apiClient.get('/dean/statistics'),
   getTrends: (period = 'month') =>
@@ -140,6 +158,8 @@ export const deanAPI = {
     apiClient.get('/dean/report', { params: { startDate, endDate } }),
   getAllAppointments: () =>
     apiClient.get('/dean/appointments'),
+  exportData: (format = 'csv') =>
+    apiClient.get(`/dean/export?format=${format}`, { responseType: 'blob' })
 }
 
 // Public API
