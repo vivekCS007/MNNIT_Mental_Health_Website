@@ -142,10 +142,15 @@ export const adminAPI = {
   deleteSchedule: (id, scheduleId) =>
     apiClient.delete(`/admin/counsellors/${id}/schedules/${scheduleId}`),
   blockSlot: (id, data) =>
-    apiClient.post(`/admin/counsellors/${id}/block-slot`, data)
+    apiClient.post(`/admin/counsellors/${id}/block-slot`, data),
+  importStudents: (formData) =>
+    apiClient.post('/admin/students/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+  downloadStudentTemplate: () =>
+    apiClient.get('/admin/students/template', { responseType: 'blob' }),
 }
 
-// Dean API
 // Dean API
 export const deanAPI = {
   getDashboardAnalytics: (userType = 'all') =>

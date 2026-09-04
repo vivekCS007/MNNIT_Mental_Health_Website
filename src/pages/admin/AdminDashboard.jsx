@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext'
 import { adminAPI } from '../../services/api'
 import useBackLogout from '../../hooks/useBackLogout'
 import ManageCounsellors from './ManageCounsellors'
+import ManageStudents from './ManageStudents'
 import '../../styles/Auth.css'
 
 const STATUS_BADGE = {
@@ -100,7 +101,8 @@ const AdminDashboard = () => {
               setExporting(true)
               try {
                 const res = await adminAPI.exportData('csv')
-                const blob = res.data instanceof Blob ? res.data : new Blob([res.data], { type: 'text/csv' })
+                const rawData = res?.data ?? res
+                const blob = rawData instanceof Blob ? rawData : new Blob([rawData], { type: 'text/csv' })
                 const url = window.URL.createObjectURL(blob)
                 const link = document.createElement('a')
                 link.href = url
@@ -125,13 +127,19 @@ const AdminDashboard = () => {
             className={`btn ${activeTab === 'appointments' ? 'btn-primary' : 'btn-secondary'}`} 
             onClick={() => setActiveTab('appointments')}
           >
-            Appointments
+            📋 Appointments
+          </button>
+          <button 
+            className={`btn ${activeTab === 'students' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('students')}
+          >
+            📊 Manage Students
           </button>
           <button 
             className={`btn ${activeTab === 'counsellors' ? 'btn-primary' : 'btn-secondary'}`} 
             onClick={() => setActiveTab('counsellors')}
           >
-            Manage Counsellors
+            🧑‍⚕️ Manage Counsellors
           </button>
         </div>
 
@@ -348,6 +356,8 @@ const AdminDashboard = () => {
           </div>
         )}
         </>
+      ) : activeTab === 'students' ? (
+        <ManageStudents />
       ) : (
         <ManageCounsellors />
       )}
