@@ -17,7 +17,7 @@ const ForgotPassword = () => {
 
     try {
       await authAPI.forgotPassword(email)
-      setMessage('Password reset link sent to your email!')
+      setMessage('✅ Check your Gmail inbox for a reset link (valid for 1 hour)!')
       setEmail('')
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send reset link')
@@ -30,8 +30,8 @@ const ForgotPassword = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>🧠 Forgot Password</h1>
-          <p>Enter your email to reset your password</p>
+          <h1>🔑 Forgot Password</h1>
+          <p>Enter your registered MNNIT email — a reset link will be sent to your inbox</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -45,7 +45,7 @@ const ForgotPassword = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder="e.g. yourname@mnnit.ac.in"
               required
               disabled={loading}
             />
