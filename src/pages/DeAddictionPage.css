@@ -134,6 +134,7 @@
 }
 
 .deaddict-feature-item {
+  position: relative;
   background: #f3eefc;
   color: #5b3ba6;
   font-weight: 600;
@@ -148,6 +149,55 @@
   background: linear-gradient(135deg, #5b3ba6 0%, #8b5fbf 100%);
   color: white;
   transform: translateY(-3px);
+}
+
+/* Custom Tooltip on hover */
+.deaddict-feature-item::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: #2c1a4d;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  width: max-content;
+  max-width: 200px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  pointer-events: none;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.deaddict-feature-item::before {
+  content: '';
+  position: absolute;
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  border: 7px solid transparent;
+  border-top-color: #2c1a4d;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 10;
+  pointer-events: none;
+  margin-bottom: -14px;
+}
+
+.deaddict-feature-item:hover::after,
+.deaddict-feature-item:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 @media (max-width: 760px) {
