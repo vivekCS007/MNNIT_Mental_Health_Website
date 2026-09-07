@@ -4,6 +4,9 @@ import { adminAPI } from '../../services/api'
 import useBackLogout from '../../hooks/useBackLogout'
 import ManageCounsellors from './ManageCounsellors'
 import ManageStudents from './ManageStudents'
+import ManageTeamSection from './ManageTeamSection'
+import ManageEvents from './ManageEvents'
+import AdminArticles from './AdminArticles'
 import '../../styles/Auth.css'
 
 const STATUS_BADGE = {
@@ -122,7 +125,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
           <button 
             className={`btn ${activeTab === 'appointments' ? 'btn-primary' : 'btn-secondary'}`} 
             onClick={() => setActiveTab('appointments')}
@@ -140,6 +143,42 @@ const AdminDashboard = () => {
             onClick={() => setActiveTab('counsellors')}
           >
             🧑‍⚕️ Manage Counsellors
+          </button>
+          <button 
+            className={`btn ${activeTab === 'office' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('office')}
+          >
+            🏢 Office Staff
+          </button>
+          <button 
+            className={`btn ${activeTab === 'deans' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('deans')}
+          >
+            🎓 Deans
+          </button>
+          <button 
+            className={`btn ${activeTab === 'ugTeam' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('ugTeam')}
+          >
+            👨‍🎓 UG Team
+          </button>
+          <button 
+            className={`btn ${activeTab === 'pgTeam' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('pgTeam')}
+          >
+            🎓 PG Team
+          </button>
+          <button 
+            className={`btn ${activeTab === 'events' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('events')}
+          >
+            🎉 Events &amp; Workshops
+          </button>
+          <button 
+            className={`btn ${activeTab === 'articles' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('articles')}
+          >
+            📝 Articles
           </button>
         </div>
 
@@ -358,8 +397,20 @@ const AdminDashboard = () => {
         </>
       ) : activeTab === 'students' ? (
         <ManageStudents />
-      ) : (
+      ) : activeTab === 'counsellors' ? (
         <ManageCounsellors />
+      ) : activeTab === 'office' ? (
+        <ManageTeamSection sectionKey="office" />
+      ) : activeTab === 'deans' ? (
+        <ManageTeamSection sectionKey="Deans" />
+      ) : activeTab === 'ugTeam' ? (
+        <ManageTeamSection sectionKey="ugTeam" />
+      ) : activeTab === 'pgTeam' ? (
+        <ManageTeamSection sectionKey="pgTeam" />
+      ) : activeTab === 'events' ? (
+        <ManageEvents />
+      ) : (
+        <AdminArticles />
       )}
       </div>
     </div>

@@ -1,11 +1,17 @@
 import { useParams, Link } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { getArticleById } from '../data/articles'
+import { loadApproved } from './ArticlesPage'
 import './ArticleDetailPage.css'
+
+const findArticle = (id) => {
+  const approved = loadApproved()
+  return approved.find(a => a.id === id) || getArticleById(id)
+}
 
 const ArticleDetailPage = () => {
   const { id } = useParams()
-  const article = getArticleById(id)
+  const article = findArticle(id)
 
   if (!article || article.type !== 'internal') {
     return (
