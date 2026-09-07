@@ -71,8 +71,7 @@ const Header = () => {
       type: 'noaction',
       submenu: [
         { label: 'Academic Resources', type: 'header' },
-        { label: 'Information for Students', href: 'https://www.mnnit.ac.in/', type: 'external' },
-        { label: 'Wellness Programs', href: 'https://www.mnnit.ac.in/index.php/institute/466-workshop', type: 'external' },
+        { label: 'Information for Students', href: 'https://www.academics.mnnit.ac.in/new', type: 'external' },
         { label: 'Mental Health Resources', type: 'header' },
         // { label: 'Self Assessment Tools', href: '#', type: 'anchor' },
         { label: 'Wellness Articles', href: '/wellness-articles', type: 'link' },
