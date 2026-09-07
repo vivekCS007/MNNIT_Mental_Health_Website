@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { ROLE_CONFIG } from '../constants/index'
 
@@ -11,6 +11,7 @@ import { ROLE_CONFIG } from '../constants/index'
  */
 const PublicOnlyRoute = ({ element }) => {
   const { isAuthenticated, user, loading } = useAuth()
+  const location = useLocation()
 
   if (loading) {
     return (
@@ -30,7 +31,9 @@ const PublicOnlyRoute = ({ element }) => {
   }
 
   if (isAuthenticated && user) {
-    const dashboard = ROLE_CONFIG[user.userType]?.dashboard || '/'
+    const params = new URLSearchParams(location.search)
+    const redirectParam = params.get('redirect')
+    const dashboard = redirectParam || ROLE_CONFIG[user.userType]?.dashboard || '/'
     return <Navigate to={dashboard} replace />
   }
 

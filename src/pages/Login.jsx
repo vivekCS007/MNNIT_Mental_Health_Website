@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { authAPI } from '../services/api'
 import { USER_TYPES, ROUTES } from '../constants/index'
@@ -7,6 +7,7 @@ import '../styles/Auth.css'
 
 const Login = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
   const [userType, setUserType] = useState('')
   const [userId, setUserId] = useState('')
@@ -44,7 +45,11 @@ const Login = () => {
           [USER_TYPES.DEAN]: ROUTES.DEAN_DASHBOARD
         }
         
-        navigate(dashboardRoutes[userType], { replace: true })
+        const params = new URLSearchParams(location.search)
+        const redirectParam = params.get('redirect')
+        
+        const from = redirectParam || location.state?.from || dashboardRoutes[userType]
+        navigate(from, { replace: true })
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.')
