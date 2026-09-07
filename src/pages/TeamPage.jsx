@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaEnvelope, FaPhone } from 'react-icons/fa'
 import { TEAM, TEAM_SECTION_ORDER } from '../data/team'
+import { contentAPI } from '../services/api'
 import './TeamPage.css'
 
 // Build initials from a name, e.g. "Dr. Alok Bajpai" -> "AB"
@@ -23,8 +24,8 @@ const colorFor = (name) => {
 const MemberCard = ({ member }) => (
   <div className="member-card">
     <div className="member-avatar">
-      {member.photo ? (
-        <img src={member.photo} alt={member.name} />
+      {(member.photo || member.image_base64 || member.photo_url) ? (
+        <img src={member.photo || member.image_base64 || member.photo_url} alt={member.name} />
       ) : (
         <div
           className="member-avatar-initials"
@@ -51,18 +52,22 @@ const MemberCard = ({ member }) => (
       )}
     </div>
 
-    {(member.qualification || member.expertise) && (
+    {member.profileUrl && (
+      <a
+        href={member.profileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="member-profile-link"
+      >
+        🔗 View MNNIT Profile →
+      </a>
+    )}
+
+    {member.qualification && (
       <div className="member-details">
-        {member.qualification && (
-          <p>
-            <strong>Qualification:</strong> {member.qualification}
-          </p>
-        )}
-        {member.expertise && (
-          <p>
-            <strong>Expertise:</strong> {member.expertise}
-          </p>
-        )}
+        <p>
+          <strong>Qualification:</strong> {member.qualification}
+        </p>
       </div>
     )}
   </div>
@@ -70,7 +75,22 @@ const MemberCard = ({ member }) => (
 
 const TeamPage = () => {
   const [activeTab, setActiveTab] = useState(TEAM_SECTION_ORDER[0])
-  const section = TEAM[activeTab]
+  const [members, setMembers] = useState([])
+
+  useEffect(() => {
+    contentAPI.getTeam(activeTab)
+      .then(res => {
+        if (res.success && res.data.length > 0) {
+          setMembers(res.data)
+        } else {
+          setMembers(TEAM[activeTab]?.members || [])
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        setMembers(TEAM[activeTab]?.members || [])
+      })
+  }, [activeTab])
 
   return (
     <div className="team-page">
@@ -95,8 +115,8 @@ const TeamPage = () => {
 
       <div className="team-content">
         <div className="team-grid">
-          {section.members.map((m, idx) => (
-            <MemberCard key={idx} member={m} />
+          {members.map((m, idx) => (
+            <MemberCard key={m.id || idx} member={m} />
           ))}
         </div>
       </div>

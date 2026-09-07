@@ -13,12 +13,33 @@ export const LOCATION_KEY = [
 
 // Professional counsellor weekly schedule
 // Each row: { name, role, day, time, place, phone, email }
+// Slots are 1 hour each.
 export const COUNSELLOR_SCHEDULE = [
+  // Dr. Kamlesh Kumar — Monday @ SVBH
   {
     name: 'Dr. Kamlesh Kumar',
     role: 'Professional Counsellor / Psychologist',
     day: 'Monday',
-    time: '6:00 PM - 8:00 PM',
+    time: '6:00 PM - 7:00 PM',
+    place: 'SVBH',
+    phone: '8765626540',
+    email: 'drkamlesh50@gmail.com'
+  },
+  {
+    name: 'Dr. Kamlesh Kumar',
+    role: 'Professional Counsellor / Psychologist',
+    day: 'Monday',
+    time: '7:00 PM - 8:00 PM',
+    place: 'SVBH',
+    phone: '8765626540',
+    email: 'drkamlesh50@gmail.com'
+  },
+  // Dr. Kamlesh Kumar — Tuesday @ SVBH
+  {
+    name: 'Dr. Kamlesh Kumar',
+    role: 'Professional Counsellor / Psychologist',
+    day: 'Tuesday',
+    time: '6:00 PM - 7:00 PM',
     place: 'SVBH',
     phone: '8765626540',
     email: 'drkamlesh50@gmail.com'
@@ -27,16 +48,17 @@ export const COUNSELLOR_SCHEDULE = [
     name: 'Dr. Kamlesh Kumar',
     role: 'Professional Counsellor / Psychologist',
     day: 'Tuesday',
-    time: '6:00 PM - 8:00 PM',
+    time: '7:00 PM - 8:00 PM',
     place: 'SVBH',
     phone: '8765626540',
     email: 'drkamlesh50@gmail.com'
   },
+  // Dr. Kamlesh Kumar — Thursday @ NBH
   {
     name: 'Dr. Kamlesh Kumar',
     role: 'Professional Counsellor / Psychologist',
     day: 'Thursday',
-    time: '6:00 PM - 8:00 PM',
+    time: '6:00 PM - 7:00 PM',
     place: 'NBH',
     phone: '8765626540',
     email: 'drkamlesh50@gmail.com'
@@ -44,17 +66,37 @@ export const COUNSELLOR_SCHEDULE = [
   {
     name: 'Dr. Kamlesh Kumar',
     role: 'Professional Counsellor / Psychologist',
+    day: 'Thursday',
+    time: '7:00 PM - 8:00 PM',
+    place: 'NBH',
+    phone: '8765626540',
+    email: 'drkamlesh50@gmail.com'
+  },
+  // Dr. Kamlesh Kumar — Saturday @ HC
+  {
+    name: 'Dr. Kamlesh Kumar',
+    role: 'Professional Counsellor / Psychologist',
     day: 'Saturday',
-    time: '10:00 AM - 12:00 Noon',
+    time: '10:00 AM - 11:00 AM',
     place: 'HC',
     phone: '8765626540',
     email: 'drkamlesh50@gmail.com'
   },
   {
+    name: 'Dr. Kamlesh Kumar',
+    role: 'Professional Counsellor / Psychologist',
+    day: 'Saturday',
+    time: '11:00 AM - 12:00 Noon',
+    place: 'HC',
+    phone: '8765626540',
+    email: 'drkamlesh50@gmail.com'
+  },
+  // Mrs. Kalpana Srivastava — Wednesday @ DJH
+  {
     name: 'Mrs. Kalpana Srivastava',
     role: 'Professional Counsellor / Psychologist',
     day: 'Wednesday',
-    time: '6:00 PM - 8:00 PM',
+    time: '6:00 PM - 7:00 PM',
     place: 'DJH',
     phone: '9695930890',
     email: 'kalpansrivastava509@gmail.com'
@@ -62,8 +104,18 @@ export const COUNSELLOR_SCHEDULE = [
   {
     name: 'Mrs. Kalpana Srivastava',
     role: 'Professional Counsellor / Psychologist',
+    day: 'Wednesday',
+    time: '7:00 PM - 8:00 PM',
+    place: 'DJH',
+    phone: '9695930890',
+    email: 'kalpansrivastava509@gmail.com'
+  },
+  // Mrs. Kalpana Srivastava — Friday @ KNGH
+  {
+    name: 'Mrs. Kalpana Srivastava',
+    role: 'Professional Counsellor / Psychologist',
     day: 'Friday',
-    time: '6:00 PM - 8:00 PM',
+    time: '6:00 PM - 7:00 PM',
     place: 'KNGH',
     phone: '9695930890',
     email: 'kalpansrivastava509@gmail.com'
@@ -71,8 +123,18 @@ export const COUNSELLOR_SCHEDULE = [
   {
     name: 'Mrs. Kalpana Srivastava',
     role: 'Professional Counsellor / Psychologist',
+    day: 'Friday',
+    time: '7:00 PM - 8:00 PM',
+    place: 'KNGH',
+    phone: '9695930890',
+    email: 'kalpansrivastava509@gmail.com'
+  },
+  // Mrs. Kalpana Srivastava — Saturday @ DJH
+  {
+    name: 'Mrs. Kalpana Srivastava',
+    role: 'Professional Counsellor / Psychologist',
     day: 'Saturday',
-    time: '10:00 AM - 12:00 Noon',
+    time: '10:00 AM - 11:00 AM',
     place: 'DJH',
     phone: '9695930890',
     email: 'kalpansrivastava509@gmail.com'
@@ -80,8 +142,27 @@ export const COUNSELLOR_SCHEDULE = [
   {
     name: 'Mrs. Kalpana Srivastava',
     role: 'Professional Counsellor / Psychologist',
+    day: 'Saturday',
+    time: '11:00 AM - 12:00 Noon',
+    place: 'DJH',
+    phone: '9695930890',
+    email: 'kalpansrivastava509@gmail.com'
+  },
+  // Mrs. Kalpana Srivastava — Sunday @ HC
+  {
+    name: 'Mrs. Kalpana Srivastava',
+    role: 'Professional Counsellor / Psychologist',
     day: 'Sunday',
-    time: '10:00 AM - 12:00 Noon',
+    time: '10:00 AM - 11:00 AM',
+    place: 'HC',
+    phone: '9695930890',
+    email: 'kalpansrivastava509@gmail.com'
+  },
+  {
+    name: 'Mrs. Kalpana Srivastava',
+    role: 'Professional Counsellor / Psychologist',
+    day: 'Sunday',
+    time: '11:00 AM - 12:00 Noon',
     place: 'HC',
     phone: '9695930890',
     email: 'kalpansrivastava509@gmail.com'

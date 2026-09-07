@@ -1,11 +1,80 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { adminAPI } from '../../services/api'
 import '../../styles/Auth.css'
+
+// Convert File → base64 data URL
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+
+const LS_PHOTOS_KEY = 'admin_counsellor_photos'
+
+const loadPhotos = () => {
+  try { return JSON.parse(localStorage.getItem(LS_PHOTOS_KEY) || '{}') } catch { return {} }
+}
+
+const savePhoto = (counsellorId, base64) => {
+  const photos = loadPhotos()
+  if (base64) photos[counsellorId] = base64
+  else delete photos[counsellorId]
+  localStorage.setItem(LS_PHOTOS_KEY, JSON.stringify(photos))
+}
+
+// Circular photo upload button used inline in the table
+const CounsellorPhotoCell = ({ counsellorId, photo, onPhotoChange }) => {
+  const inputRef = useRef()
+  const handleFile = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return }
+    if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5 MB.'); return }
+    const base64 = await fileToBase64(file)
+    savePhoto(counsellorId, base64)
+    onPhotoChange(counsellorId, base64)
+  }
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div
+        onClick={() => inputRef.current?.click()}
+        title="Click to upload photo"
+        style={{
+          width: 42, height: 42, borderRadius: '50%', flexShrink: 0,
+          background: photo ? 'transparent' : '#e8e0f5',
+          border: '2px dashed #c4aef0', overflow: 'hidden',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer'
+        }}
+      >
+        {photo
+          ? <img src={photo} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : <span style={{ fontSize: '1.1rem' }}>📷</span>
+        }
+      </div>
+      {photo && (
+        <button
+          onClick={() => { savePhoto(counsellorId, null); onPhotoChange(counsellorId, null) }}
+          title="Remove photo"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e74c3c', fontSize: '0.8rem', padding: 0 }}
+        >✕</button>
+      )}
+      <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFile} />
+    </div>
+  )
+}
 
 const ManageCounsellors = () => {
   const [counsellors, setCounsellors] = useState([])
   const [loading, setLoading] = useState(false)
   const [activeCounsellor, setActiveCounsellor] = useState(null)
+  const [photos, setPhotos] = useState(loadPhotos())
+  
+  const handlePhotoChange = (id, base64) => {
+    setPhotos(prev => ({ ...prev, [id]: base64 }))
+  }
   
   // Forms
   const [newCounsellor, setNewCounsellor] = useState({ name: '', email: '', identifier: '', branch: '', password: '' })
@@ -122,6 +191,7 @@ const ManageCounsellors = () => {
               <table className="table" style={{ marginTop: '15px' }}>
                 <thead>
                   <tr>
+                    <th>Photo</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Action</th>
@@ -130,6 +200,13 @@ const ManageCounsellors = () => {
                 <tbody>
                   {counsellors.map(c => (
                     <tr key={c.id}>
+                      <td>
+                        <CounsellorPhotoCell
+                          counsellorId={c.id}
+                          photo={photos[c.id] || null}
+                          onPhotoChange={handlePhotoChange}
+                        />
+                      </td>
                       <td>{c.name}</td>
                       <td>{c.email}</td>
                       <td>
@@ -140,7 +217,7 @@ const ManageCounsellors = () => {
                     </tr>
                   ))}
                   {counsellors.length === 0 && (
-                    <tr><td colSpan="3" style={{ textAlign: 'center' }}>No counsellors found.</td></tr>
+                    <tr><td colSpan="4" style={{ textAlign: 'center' }}>No counsellors found.</td></tr>
                   )}
                 </tbody>
               </table>

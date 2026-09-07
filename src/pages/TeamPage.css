@@ -181,6 +181,28 @@
   color: #2c1a4d;
 }
 
+/* MNNIT profile hyperlink */
+.member-profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0 12px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #5b3ba6, #8b5fbf);
+  color: white;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 2px 8px rgba(91, 59, 166, 0.3);
+}
+
+.member-profile-link:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 600px) {
   .team-hero h1 {
     font-size: 30px;
