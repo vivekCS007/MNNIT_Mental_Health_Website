@@ -93,7 +93,7 @@ export const RESOURCE_CARDS = [
     title: 'Self-Help Tools',
     desc: 'Tools and guides designed to promote resilience and personal growth.',
     cta: 'Explore',
-    url: '#'
+    url: 'https://www.academics.mnnit.ac.in/new'
   },
   {
     icon: 'users',

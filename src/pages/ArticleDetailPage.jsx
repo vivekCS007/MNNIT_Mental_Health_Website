@@ -1,11 +1,40 @@
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { getArticleById } from '../data/articles'
+import { contentAPI } from '../services/api'
 import './ArticleDetailPage.css'
 
 const ArticleDetailPage = () => {
   const { id } = useParams()
-  const article = getArticleById(id)
+  const [article, setArticle] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Check static first
+    const staticArticle = getArticleById(id)
+    if (staticArticle) {
+      setArticle(staticArticle)
+      setLoading(false)
+      return
+    }
+
+    // Check DB
+    contentAPI.getArticles('approved').then(res => {
+      if (res.success) {
+        const dbArt = res.data.find(a => a.id === id)
+        if (dbArt) setArticle(dbArt)
+      }
+      setLoading(false)
+    }).catch(err => {
+      console.error(err)
+      setLoading(false)
+    })
+  }, [id])
+
+  if (loading) {
+    return <div className="article-detail-page"><div className="article-detail-container"><p>Loading...</p></div></div>
+  }
 
   if (!article || article.type !== 'internal') {
     return (

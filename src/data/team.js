@@ -114,8 +114,8 @@ export const TEAM = {
             role: 'Faculty In-Charge Boys',
             email: 'dinesh_singh@mnnit.ac.in',
             phone: '+91-9455421546',
-            qualification: 'Uttar Pradesh Technical University, Lucknow, A Fast Motion Estimation Algorithm for Digital Image Stabilization , IIT Roorkee, Efficient Cluster-Based Misbehavior Detection and Revocation of Malicious Vehicle in VANET, CSED, MNNIT Allahabad.',
-            // expertise: 'Vehicular ad-hoc Networks, Data Mining, Edge Computing, Machine Learning.',
+            qualification: 'B.Tech (Electrical Engineering), M.Tech (Control Systems), Ph.D (Electronics & Computer Engineering)',
+            profileUrl: 'https://mnnit.ac.in/profile/dinesh_singh',
             photo: 'src/assets/team/dinesh.jpg'
         },
         {
@@ -123,8 +123,8 @@ export const TEAM = {
             role: 'Faculty In-charge Girls',
             email: 'rajitha@mnnit.ac.in',
             phone: '+91-8052355544',
-            qualification: 'B. Tech in Computer Science and Information Technology, Master of Engineering in Computer Science and Engineering, Ph.D(MNNIT Allahabad).',
-            // expertise: 'Image Processing, Medical Image Processing, Multimedia Processing, Machine Learning in Computer Vision, Deep Learning in Computer Vision, Quantum Machine Learning.',
+            qualification: 'B.Tech (Computer Science & IT), M.E. (Computer Science & Engineering), Ph.D',
+            profileUrl: 'https://mnnit.ac.in/profile/rajitha',
             photo: 'src/assets/team/Rajitha.jpg'
         },
         {
@@ -132,7 +132,7 @@ export const TEAM = {
             role: 'Faculty In-charge Boys',
             email: 'abhishekkunduamd@mnnit.ac.in',
             phone: '+91-8420247761',
-            qualification: 'B. Tech (WBUT) in Mechanical Engineering, PhD (AcSIR) in Computational Fluid Dynamics.',
+            qualification: 'B.Tech (Mechanical Engineering), Ph.D (Computational Fluid Dynamics)',
             // expertise: 'Image Processing, Medical Image Processing, Multimedia Processing, Machine Learning in Computer Vision, Deep Learning in Computer Vision, Quantum Machine Learning.',
             photo: 'src/assets/team/abhishek.jpeg'
         },
@@ -141,8 +141,8 @@ export const TEAM = {
             role: 'Faculty In-charge Girls',
             email: 'kanika@mnnit.ac.in',
             phone: '+91-9915856595',
-            qualification: 'Civil Engineering (MBM Jodhpur), Environmental Engineering (MNIT Jaipur), Civil Engineering (MNIT Jaipur).',
-            // expertise: 'Image Processing, Medical Image Processing, Multimedia Processing, Machine Learning in Computer Vision, Deep Learning in Computer Vision, Quantum Machine Learning.',
+            qualification: 'B.Tech (Civil Engineering), M.Tech (Environmental Engineering), Ph.D (Civil Engineering)',
+            profileUrl: 'https://mnnit.ac.in/profile/kanika',
             photo: 'src/assets/team/kanika.jpeg'
         }
         ]
@@ -152,21 +152,39 @@ export const TEAM = {
     label: 'Office Staff',
     members: [
       {
-        name: 'Ramesh Gupta',
-        role: 'Junior Assistant',
-        email: 'office@mnnit.ac.in',
-        phone: '+91-512-2259-401',
+        name: 'Mohd Danish Ansari',
+        role: 'Deputy Registrar (Student Welfare)',
+        email: 'danishar@mnnit.ac.in',
+        phone: '9335162848',
         qualification: '',
-        expertise: 'Administration, finance, scheduling.',
+        expertise: '',
         photo: null
       },
       {
-        name: 'Kavita Singh',
-        role: 'Project Assistant',
-        email: 'helpdesk@mnnit.ac.in',
-        phone: '+91-512-2259-402',
+        name: 'Mr. Prem Chandra',
+        role: 'Senior Assistant',
+        email: 'officedeansw@gmail.com',
+        phone: '9415014474',
         qualification: '',
-        expertise: 'Appointments and front-desk support.',
+        expertise: '',
+        photo: null
+      },
+      {
+        name: 'Mr. Shiv Shankar',
+        role: '',
+        email: 'shivshankar301978@gmil.com',
+        phone: '0532-227-1039',
+        qualification: '',
+        expertise: '',
+        photo: null
+      },
+      {
+        name: 'Mr. Avdhesh Verma',
+        role: '',
+        email: 'avdheshverma0532@gmail.com',
+        phone: '0532-227-1039',
+        qualification: '',
+        expertise: '',
         photo: null
       }
     ]
@@ -261,7 +279,6 @@ export const TEAM = {
 export const TEAM_SECTION_ORDER = [
   'Deans',
   'counsellors',
-  'psychiatrists',
   'faculty',
   'office',
   'ugTeam',

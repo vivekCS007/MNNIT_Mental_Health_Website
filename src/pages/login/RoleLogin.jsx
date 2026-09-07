@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { authAPI } from '../../services/api'
 import { ROLE_CONFIG } from '../../constants/index'
@@ -8,6 +8,7 @@ import '../../styles/Auth.css'
 const RoleLogin = ({ role }) => {
   const config = ROLE_CONFIG[role]
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
 
   const [userId, setUserId] = useState('')
@@ -37,7 +38,12 @@ const RoleLogin = ({ role }) => {
       if (response.success) {
         const userData = { ...response.user, userType: config.userType }
         login(userData, response.token)
-        navigate(config.dashboard, { replace: true })
+        
+        const params = new URLSearchParams(location.search)
+        const redirectParam = params.get('redirect')
+        
+        const from = redirectParam || location.state?.from || config.dashboard
+        navigate(from, { replace: true })
       } else {
         setError(response.message || 'Login failed. Please try again.')
       }

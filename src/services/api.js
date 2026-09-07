@@ -179,4 +179,23 @@ export const publicAPI = {
     apiClient.get('/public/resources')
 }
 
+// Content API
+export const contentAPI = {
+  // Team
+  getTeam: (category) => apiClient.get('/content/team', { params: { category } }),
+  addTeamMember: (data) => apiClient.post('/content/team', data),
+  updateTeamMember: (id, data) => apiClient.put(`/content/team/${id}`, data),
+  deleteTeamMember: (id) => apiClient.delete(`/content/team/${id}`),
+  // Events
+  getEvents: () => apiClient.get('/content/events'),
+  addEvent: (data) => apiClient.post('/content/events', data),
+  updateEvent: (id, data) => apiClient.put(`/content/events/${id}`, data),
+  deleteEvent: (id) => apiClient.delete(`/content/events/${id}`),
+  // Articles
+  getArticles: (status) => apiClient.get('/content/articles', { params: { status } }),
+  submitArticle: (data) => apiClient.post('/content/articles', data),
+  updateArticleStatus: (id, status) => apiClient.put(`/content/articles/${id}/status`, { status }),
+  deleteArticle: (id) => apiClient.delete(`/content/articles/${id}`)
+}
+
 export default apiClient
