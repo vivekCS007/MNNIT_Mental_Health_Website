@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react'
-import { loadPending, loadApproved } from '../ArticlesPage'
-
-const LS_PENDING_KEY  = 'articles_pending'
-const LS_APPROVED_KEY = 'articles_approved'
-
-const savePending  = (arr) => localStorage.setItem(LS_PENDING_KEY,  JSON.stringify(arr))
-const saveApproved = (arr) => localStorage.setItem(LS_APPROVED_KEY, JSON.stringify(arr))
+import { contentAPI } from '../../services/api'
 
 const AdminArticles = () => {
   const [pending,  setPending]  = useState([])
@@ -13,35 +7,48 @@ const AdminArticles = () => {
   const [preview,  setPreview]  = useState(null)
   const [saved, setSaved] = useState(false)
 
-  const refresh = () => {
-    setPending(loadPending())
-    setApproved(loadApproved())
+  const refresh = async () => {
+    try {
+      const pRes = await contentAPI.getArticles('pending')
+      const aRes = await contentAPI.getArticles('approved')
+      if (pRes.success) setPending(pRes.data)
+      if (aRes.success) setApproved(aRes.data)
+    } catch (err) {
+      console.error('Failed to load articles', err)
+    }
   }
 
   useEffect(() => { refresh() }, [])
 
   const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 2000) }
 
-  const handleApprove = (article) => {
-    const newPending  = loadPending().filter(a => a.id !== article.id)
-    const newApproved = [{ ...article, status: 'approved', approvedAt: new Date().toISOString() }, ...loadApproved()]
-    savePending(newPending)
-    saveApproved(newApproved)
-    refresh(); flash(); setPreview(null)
+  const handleApprove = async (article) => {
+    try {
+      await contentAPI.updateArticleStatus(article.id, 'approved')
+      refresh(); flash(); setPreview(null)
+    } catch (err) {
+      alert('Error: ' + err.message)
+    }
   }
 
-  const handleReject = (article) => {
+  const handleReject = async (article) => {
     if (!window.confirm(`Reject and delete "${article.title}"?`)) return
-    const newPending = loadPending().filter(a => a.id !== article.id)
-    savePending(newPending)
-    refresh(); flash(); setPreview(null)
+    try {
+      await contentAPI.updateArticleStatus(article.id, 'rejected')
+      refresh(); flash(); setPreview(null)
+    } catch (err) {
+      alert('Error: ' + err.message)
+    }
   }
 
-  const handleRemoveApproved = (article) => {
+  const handleRemoveApproved = async (article) => {
     if (!window.confirm(`Remove published article "${article.title}"?`)) return
-    const newApproved = loadApproved().filter(a => a.id !== article.id)
-    saveApproved(newApproved)
-    refresh(); flash()
+    try {
+      await contentAPI.deleteArticle(article.id)
+      refresh(); flash()
+    } catch (err) {
+      alert('Error: ' + err.message)
+    }
   }
 
   return (
@@ -85,7 +92,7 @@ const AdminArticles = () => {
                   </td>
                   <td style={{ padding: '10px 14px', color: '#555', fontSize: '0.88rem' }}>{art.author}</td>
                   <td style={{ padding: '10px 14px', color: '#888', fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
-                    {new Date(art.submittedAt).toLocaleDateString('en-IN')}
+                    {new Date(art.submitted_at || art.submittedAt).toLocaleDateString('en-IN')}
                   </td>
                   <td style={{ padding: '10px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                     <button
@@ -133,7 +140,7 @@ const AdminArticles = () => {
                   <td style={{ padding: '10px 14px', fontWeight: 600, color: '#333', fontSize: '0.9rem' }}>{art.title}</td>
                   <td style={{ padding: '10px 14px', color: '#555', fontSize: '0.88rem' }}>{art.author}</td>
                   <td style={{ padding: '10px 14px', color: '#888', fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
-                    {art.approvedAt ? new Date(art.approvedAt).toLocaleDateString('en-IN') : '—'}
+                    {art.approved_at || art.approvedAt ? new Date(art.approved_at || art.approvedAt).toLocaleDateString('en-IN') : '—'}
                   </td>
                   <td style={{ padding: '10px 14px', textAlign: 'center' }}>
                     <button
@@ -162,10 +169,10 @@ const AdminArticles = () => {
               <div>
                 <h2 style={{ margin: 0, color: '#2c1a4d', fontSize: '1.2rem' }}>{preview.title}</h2>
                 <p style={{ margin: '4px 0 0', color: '#888', fontSize: '0.85rem' }}>
-                  {preview.author} &nbsp;·&nbsp; {new Date(preview.submittedAt).toLocaleDateString('en-IN')}
+                  {preview.author} &nbsp;·&nbsp; {new Date(preview.submitted_at || preview.submittedAt).toLocaleDateString('en-IN')}
                 </p>
-                {preview.submittedBy && (
-                  <p style={{ margin: '2px 0 0', color: '#aaa', fontSize: '0.78rem' }}>by {preview.submittedBy}</p>
+                {(preview.submitted_by || preview.submittedBy) && (
+                  <p style={{ margin: '2px 0 0', color: '#aaa', fontSize: '0.78rem' }}>by {preview.submitted_by || preview.submittedBy}</p>
                 )}
               </div>
               <button onClick={() => setPreview(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#888' }}>×</button>

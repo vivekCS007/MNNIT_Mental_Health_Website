@@ -6,19 +6,10 @@ import { useAuth } from '../context/AuthContext'
 import './ArticlesPage.css'
 import './SubmitArticle.css'
 
-// ─── localStorage helpers ─────────────────────────────────────────────────────
-const LS_PENDING_KEY  = 'articles_pending'
-const LS_APPROVED_KEY = 'articles_approved'
+import { useEffect } from 'react'
+import { contentAPI } from '../services/api'
 
-export const loadPending  = () => { try { return JSON.parse(localStorage.getItem(LS_PENDING_KEY)  || '[]') } catch { return [] } }
-export const loadApproved = () => { try { return JSON.parse(localStorage.getItem(LS_APPROVED_KEY) || '[]') } catch { return [] } }
-
-const savePending  = (arr) => localStorage.setItem(LS_PENDING_KEY,  JSON.stringify(arr))
-
-const allPublishedArticles = () => {
-  const approved = loadApproved()
-  return [...approved, ...ARTICLES]  // approved user articles first, then static
-}
+// We will fetch approved articles from the DB and merge with static ARTICLES.
 
 // ─── Submission modal ─────────────────────────────────────────────────────────
 const EMPTY_FORM = { title: '', excerpt: '', body: '', category: 'Student Experience' }
@@ -29,28 +20,25 @@ const SubmitModal = ({ user, onClose, onSubmitted }) => {
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.title.trim() || !form.excerpt.trim() || !form.body.trim()) {
       alert('Title, summary and article body are all required.')
       return
     }
-    const pending = loadPending()
-    const newArticle = {
-      id: `user_${Date.now()}`,
-      type: 'internal',
-      status: 'pending',
-      title: form.title.trim(),
-      author: form.author.trim() || user?.name || 'Anonymous',
-      date: new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }),
-      excerpt: form.excerpt.trim(),
-      color: '5b3ba6',
-      body: form.body.trim().split('\n\n').filter(Boolean),
-      submittedAt: new Date().toISOString(),
-      submittedBy: user?.email || user?.identifier || '',
+    try {
+      await contentAPI.submitArticle({
+        title: form.title.trim(),
+        author: form.author.trim() || user?.name || 'Anonymous',
+        date: new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }),
+        excerpt: form.excerpt.trim(),
+        color: '5b3ba6',
+        body: form.body.trim().split('\n\n').filter(Boolean)
+      })
+      setDone(true)
+      onSubmitted?.()
+    } catch (err) {
+      alert('Failed to submit article: ' + (err.response?.data?.message || err.message))
     }
-    savePending([...pending, newArticle])
-    setDone(true)
-    onSubmitted?.()
   }
 
   return (
@@ -145,7 +133,15 @@ const ArticlesPage = () => {
   const location = useLocation()
   const [showModal, setShowModal] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const articles = allPublishedArticles()
+  const [dbArticles, setDbArticles] = useState([])
+
+  useEffect(() => {
+    contentAPI.getArticles('approved')
+      .then(res => { if (res.success) setDbArticles(res.data) })
+      .catch(err => console.error(err))
+  }, [])
+
+  const articles = [...dbArticles, ...ARTICLES]
 
   return (
     <div className="articles-page">
