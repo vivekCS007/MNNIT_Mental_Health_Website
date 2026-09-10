@@ -31,8 +31,10 @@ apiClient.interceptors.response.use(
     return response.data
   },
   (error) => {
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
+    // Handle 401 Unauthorized (except on login where 401 just means wrong password)
+    const isLoginRequest = error.config?.url?.includes('/auth/login')
+    
+    if (error.response?.status === 401 && !isLoginRequest) {
       removeLocalStorage(STORAGE_KEYS.TOKEN)
       removeLocalStorage(STORAGE_KEYS.USER)
       window.location.href = '/'
