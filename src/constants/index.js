@@ -26,7 +26,7 @@ export const ROLE_CONFIG = {
     idLabel: 'Official Email ID',
     idPlaceholder: 'e.g. name@mnnit.ac.in',
     passwordHint: 'Your Date of Birth in DD-MM-YYYY format',
-    dashboard: '/appointments/dashboard'
+    dashboard: '/faculty/dashboard'
   },
   staff: {
     userType: 'staff',
@@ -100,6 +100,7 @@ export const ROUTES = {
   COUNSELLOR_DASHBOARD: '/counsellor/dashboard',
   ADMIN_DASHBOARD: '/administrator/dashboard',
   DEAN_DASHBOARD: '/dean/dashboard',
+  FACULTY_DASHBOARD: '/faculty/dashboard',
 }
 
 export const ERROR_MESSAGES = {

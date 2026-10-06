@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { ROLE_CONFIG } from '../../constants/index'
 import { bookerAPI } from '../../services/api'
@@ -13,6 +14,7 @@ const STATUS_BADGE = {
 }
 
 const StudentDashboard = () => {
+  const navigate = useNavigate()
   const { user, logout } = useAuth()
   const roleLabel = ROLE_CONFIG[user?.userType]?.label || 'Appointments'
   useBackLogout()
@@ -158,7 +160,14 @@ const StudentDashboard = () => {
             <h1>{roleLabel} Dashboard</h1>
             <p>Welcome, <strong>{user?.name}</strong> &nbsp;|&nbsp; ID: {user?.id || user?.registration_number}</p>
           </div>
-          <button className="btn btn-danger" onClick={logout}>🚪 Logout</button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            {user?.userType === 'faculty' && (
+              <button className="btn btn-secondary" onClick={() => navigate('/faculty/dashboard')} style={{ fontWeight: '600', color: '#2c3e50', backgroundColor: '#e2e8f0', borderColor: '#cbd5e1' }}>
+                🧑‍🏫 Switch to Mentor Dashboard
+              </button>
+            )}
+            <button className="btn btn-danger" onClick={logout}>🚪 Logout</button>
+          </div>
         </div>
 
         {msg.text && (

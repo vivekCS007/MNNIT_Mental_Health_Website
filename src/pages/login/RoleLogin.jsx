@@ -108,6 +108,7 @@ const RoleLogin = ({ role }) => {
         </form>
 
         <div className="auth-links">
+          <Link to="/forgot-password">Forgot Password?</Link>
           <Link to="/">Back to Home</Link>
         </div>
 

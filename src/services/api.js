@@ -151,6 +151,12 @@ export const adminAPI = {
     }),
   downloadStudentTemplate: () =>
     apiClient.get('/admin/students/template', { responseType: 'blob' }),
+  importFaculty: (formData) =>
+    apiClient.post('/admin/faculty/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+  downloadFacultyTemplate: () =>
+    apiClient.get('/admin/faculty/template', { responseType: 'blob' }),
 }
 
 // Dean API

@@ -4,6 +4,7 @@ import { adminAPI } from '../../services/api'
 import useBackLogout from '../../hooks/useBackLogout'
 import ManageCounsellors from './ManageCounsellors'
 import ManageStudents from './ManageStudents'
+import ManageFaculty from './ManageFaculty'
 import ManageTeamSection from './ManageTeamSection'
 import ManageEvents from './ManageEvents'
 import AdminArticles from './AdminArticles'
@@ -137,6 +138,12 @@ const AdminDashboard = () => {
             onClick={() => setActiveTab('students')}
           >
             📊 Manage Students
+          </button>
+          <button 
+            className={`btn ${activeTab === 'faculties' ? 'btn-primary' : 'btn-secondary'}`} 
+            onClick={() => setActiveTab('faculties')}
+          >
+            👨‍🏫 Manage Faculty
           </button>
           <button 
             className={`btn ${activeTab === 'counsellors' ? 'btn-primary' : 'btn-secondary'}`} 
@@ -397,6 +404,8 @@ const AdminDashboard = () => {
         </>
       ) : activeTab === 'students' ? (
         <ManageStudents />
+      ) : activeTab === 'faculties' ? (
+        <ManageFaculty />
       ) : activeTab === 'counsellors' ? (
         <ManageCounsellors />
       ) : activeTab === 'office' ? (
