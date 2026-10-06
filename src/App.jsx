@@ -11,6 +11,7 @@ import StudentLogin from './pages/login/StudentLogin'
 import CounsellorLogin from './pages/login/CounsellorLogin'
 import AdministratorLogin from './pages/login/AdministratorLogin'
 import DeanLogin from './pages/login/DeanLogin'
+import FacultyLogin from './pages/login/FacultyLogin'
 import BookerLogin from './pages/login/BookerLogin'
 import BookAppointment from './pages/BookAppointment'
 import TeleManasPage from './pages/TeleManasPage'
@@ -22,6 +23,7 @@ import StudentDashboard from './pages/student/StudentDashboard'
 import CounsellorDashboard from './pages/counsellor/CounsellorDashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import DeanDashboard from './pages/dean/DeanDashboard'
+import FacultyDashboard from './pages/faculty/FacultyDashboard'
 import TeamPage from './pages/TeamPage'
 import EmergencyPage from './pages/EmergencyPage'
 import FAQPage from './pages/FAQPage'
@@ -68,6 +70,7 @@ function App() {
               <Route path="/login/counsellor" element={<PublicOnlyRoute element={<CounsellorLogin />} />} />
               <Route path="/login/administrator" element={<PublicOnlyRoute element={<AdministratorLogin />} />} />
               <Route path="/login/dean" element={<PublicOnlyRoute element={<DeanLogin />} />} />
+              <Route path="/login/faculty" element={<PublicOnlyRoute element={<FacultyLogin />} />} />
               <Route path="/login/booker" element={<PublicOnlyRoute element={<BookerLogin />} />} />
               <Route path="/book-appointment" element={<BookAppointment />} />
               <Route path="/forgot-password" element={<PublicOnlyRoute element={<ForgotPassword />} />} />
@@ -126,6 +129,17 @@ function App() {
                   <ProtectedRoute
                     element={<DeanDashboard />}
                     allowedRoles={['dean']}
+                  />
+                }
+              />
+
+              {/* Protected Faculty Routes */}
+              <Route
+                path="/faculty/dashboard"
+                element={
+                  <ProtectedRoute
+                    element={<FacultyDashboard />}
+                    allowedRoles={['faculty']}
                   />
                 }
               />

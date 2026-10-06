@@ -42,7 +42,7 @@ const BookerLogin = () => {
       if (response.success) {
         const userData = { ...response.user, userType: config.userType }
         login(userData, response.token)
-        navigate(config.dashboard, { replace: true })
+        navigate('/appointments/dashboard', { replace: true })
       } else {
         setError(response.message || 'Login failed. Please try again.')
       }
@@ -63,7 +63,7 @@ const BookerLogin = () => {
       userType: config.userType
     }
     login(fakeUser, 'dev-token-' + role)
-    navigate(config.dashboard, { replace: true })
+    navigate('/appointments/dashboard', { replace: true })
   }
 
   return (
@@ -153,6 +153,7 @@ const BookerLogin = () => {
 
         <div className="auth-links">
           <Link to="/book-appointment">Back</Link>
+          <Link to="/forgot-password">Forgot Password?</Link>
           <Link to="/">Home</Link>
         </div>
       </div>

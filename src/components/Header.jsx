@@ -87,7 +87,8 @@ const Header = () => {
       submenu: [
         { label: 'Counsellor', href: '/login/counsellor', type: 'link' },
         { label: 'Administrator', href: '/login/administrator', type: 'link' },
-        { label: 'Dean, Student Welfare', href: '/login/dean', type: 'link' }
+        { label: 'Dean, Student Welfare', href: '/login/dean', type: 'link' },
+        { label: 'Faculty Mentor', href: '/login/faculty', type: 'link' }
       ]
     },
     // {

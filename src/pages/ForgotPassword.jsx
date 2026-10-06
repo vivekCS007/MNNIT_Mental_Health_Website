@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { authAPI } from '../services/api'
 import '../styles/Auth.css'
 
@@ -8,6 +8,7 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -17,10 +18,10 @@ const ForgotPassword = () => {
 
     try {
       await authAPI.forgotPassword(email)
-      setMessage('✅ Check your Gmail inbox for a reset link (valid for 1 hour)!')
-      setEmail('')
+      setMessage('✅ Check your Gmail inbox for a 6-digit OTP (valid for 15 minutes)! Redirecting...')
+      setTimeout(() => navigate('/reset-password'), 2000)
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send reset link')
+      setError(err.response?.data?.message || 'Failed to send reset OTP')
     } finally {
       setLoading(false)
     }
@@ -31,7 +32,7 @@ const ForgotPassword = () => {
       <div className="auth-card">
         <div className="auth-header">
           <h1>🔑 Forgot Password</h1>
-          <p>Enter your registered MNNIT email — a reset link will be sent to your inbox</p>
+          <p>Enter your registered MNNIT email — an OTP will be sent to your inbox</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -51,8 +52,8 @@ const ForgotPassword = () => {
             />
           </div>
 
-          <button type="submit" className="btn-login" disabled={loading}>
-            {loading ? 'Sending...' : 'Send Reset Link'}
+          <button type="submit" className="btn-login" disabled={loading || !!message}>
+            {loading ? 'Sending...' : 'Send Reset OTP'}
           </button>
         </form>
 

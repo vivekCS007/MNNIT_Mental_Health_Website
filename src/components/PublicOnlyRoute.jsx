@@ -33,7 +33,15 @@ const PublicOnlyRoute = ({ element }) => {
   if (isAuthenticated && user) {
     const params = new URLSearchParams(location.search)
     const redirectParam = params.get('redirect')
-    const dashboard = redirectParam || ROLE_CONFIG[user.userType]?.dashboard || '/'
+    let defaultDashboard = ROLE_CONFIG[user.userType]?.dashboard || '/'
+
+    // If the user navigates back to /login/booker but is already logged in as a student/staff/faculty, 
+    // redirect them to the booker dashboard rather than their default role dashboard (e.g. mentor dashboard)
+    if (location.pathname === '/login/booker' && ['student', 'faculty', 'staff'].includes(user.userType)) {
+      defaultDashboard = '/appointments/dashboard'
+    }
+
+    const dashboard = redirectParam || defaultDashboard
     return <Navigate to={dashboard} replace />
   }
 
