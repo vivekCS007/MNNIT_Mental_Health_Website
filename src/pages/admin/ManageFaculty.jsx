@@ -134,9 +134,19 @@ const ManageFaculty = () => {
             disabled={uploading || !file}
             style={{ padding: '10px 24px', minWidth: '140px' }}
           >
-            {uploading ? '⏳ Importing...' : '⬆️ Import Faculty'}
+            {uploading ? '⏳ Importing… please wait' : '⬆️ Import Faculty'}
           </button>
         </div>
+
+        {uploading && (
+          <div style={{
+            marginTop: '14px', background: '#fff9e6', border: '1px solid #f0c040',
+            borderRadius: '8px', padding: '12px 16px', color: '#7a5200', fontSize: '0.88rem'
+          }}>
+            ⏳ <strong>Importing faculty…</strong> This may take a moment for large sheets.
+            Please do not close this tab.
+          </div>
+        )}
 
         {file && (
           <p style={{ margin: '10px 0 0', color: '#5b3ba6', fontSize: '0.85rem' }}>
