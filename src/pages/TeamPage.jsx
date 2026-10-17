@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { FaEnvelope, FaPhone } from 'react-icons/fa'
 import { TEAM, TEAM_SECTION_ORDER } from '../data/team'
-import { contentAPI } from '../services/api'
+import { contentAPI, publicAPI } from '../services/api'
 import './TeamPage.css'
 
 // Build initials from a name, e.g. "Dr. Alok Bajpai" -> "AB"
@@ -76,20 +76,40 @@ const MemberCard = ({ member }) => (
 const TeamPage = () => {
   const [activeTab, setActiveTab] = useState(TEAM_SECTION_ORDER[0])
   const [members, setMembers] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    contentAPI.getTeam(activeTab)
-      .then(res => {
-        if (res.success && res.data.length > 0) {
-          setMembers(res.data)
+    setLoading(true)
+    setMembers([])
+
+    const load = async () => {
+      try {
+        if (activeTab === 'counsellors') {
+          // Fetch counsellors dynamically from the users table (real registered counsellors).
+          const res = await publicAPI.getCounsellors()
+          if (res.success && res.data.length > 0) {
+            setMembers(res.data)
+          } else {
+            // Fallback to static data if no counsellors are registered yet
+            setMembers(TEAM[activeTab]?.members || [])
+          }
         } else {
-          setMembers(TEAM[activeTab]?.members || [])
+          const res = await contentAPI.getTeam(activeTab)
+          if (res.success && res.data.length > 0) {
+            setMembers(res.data)
+          } else {
+            setMembers(TEAM[activeTab]?.members || [])
+          }
         }
-      })
-      .catch(err => {
+      } catch (err) {
         console.error(err)
         setMembers(TEAM[activeTab]?.members || [])
-      })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    load()
   }, [activeTab])
 
   return (
@@ -114,11 +134,18 @@ const TeamPage = () => {
       </div>
 
       <div className="team-content">
-        <div className="team-grid">
-          {members.map((m, idx) => (
-            <MemberCard key={m.id || idx} member={m} />
-          ))}
-        </div>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Loading…</div>
+        ) : (
+          <div className="team-grid">
+            {members.map((m, idx) => (
+              <MemberCard key={m.id || idx} member={m} />
+            ))}
+            {!loading && members.length === 0 && (
+              <p style={{ color: '#888', gridColumn: '1/-1', textAlign: 'center' }}>No members found.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

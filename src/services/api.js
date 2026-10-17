@@ -149,13 +149,15 @@ export const adminAPI = {
     apiClient.post(`/admin/counsellors/${id}/block-slot`, data),
   importStudents: (formData) =>
     apiClient.post('/admin/students/import', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 5 * 60 * 1000  // 5 minutes — large sheets can take time
     }),
   downloadStudentTemplate: () =>
     apiClient.get('/admin/students/template', { responseType: 'blob' }),
   importFaculty: (formData) =>
     apiClient.post('/admin/faculty/import', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 5 * 60 * 1000  // 5 minutes
     }),
   downloadFacultyTemplate: () =>
     apiClient.get('/admin/faculty/template', { responseType: 'blob' }),
@@ -183,6 +185,8 @@ export const publicAPI = {
     apiClient.get('/public/services'),
   getTeamMembers: () =>
     apiClient.get('/public/team'),
+  getCounsellors: () =>
+    apiClient.get('/public/counsellors'),
   getEmergencyContacts: () =>
     apiClient.get('/public/emergency-contacts'),
   getResources: () =>
