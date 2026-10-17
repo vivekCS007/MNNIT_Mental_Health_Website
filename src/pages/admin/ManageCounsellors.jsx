@@ -165,6 +165,18 @@ const ManageCounsellors = () => {
     }
   }
 
+  const handleDeleteCounsellor = async (counsellor) => {
+    if (!window.confirm(`Are you sure you want to permanently delete "${counsellor.name}"? Their schedules will be removed. Past appointment records will remain but will no longer reference them.`)) return
+    try {
+      await adminAPI.deleteCounsellor(counsellor.id)
+      setCounsellors(prev => prev.filter(c => c.id !== counsellor.id))
+      if (activeCounsellor?.id === counsellor.id) setActiveCounsellor(null)
+      alert(`"${counsellor.name}" deleted successfully.`)
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete counsellor')
+    }
+  }
+
   const daysMap = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 0: 'Sunday' }
 
   return (
@@ -210,9 +222,14 @@ const ManageCounsellors = () => {
                       <td>{c.name}</td>
                       <td>{c.email}</td>
                       <td>
-                        <button className="btn btn-secondary" onClick={() => loadSchedules(c)} style={{ padding: '4px 8px', fontSize: '0.8rem' }}>
-                          Manage Schedule
-                        </button>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                          <button className="btn btn-secondary" onClick={() => loadSchedules(c)} style={{ padding: '4px 8px', fontSize: '0.8rem' }}>
+                            Manage Schedule
+                          </button>
+                          <button className="btn btn-danger" onClick={() => handleDeleteCounsellor(c)} style={{ padding: '4px 8px', fontSize: '0.8rem' }}>
+                            🗑️ Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

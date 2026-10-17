@@ -137,6 +137,8 @@ export const adminAPI = {
     apiClient.get('/admin/counsellors'),
   createCounsellor: (data) =>
     apiClient.post('/admin/counsellors', data),
+  deleteCounsellor: (id) =>
+    apiClient.delete(`/admin/counsellors/${id}`),
   getSchedules: (id) =>
     apiClient.get(`/admin/counsellors/${id}/schedules`),
   addSchedule: (id, data) =>
